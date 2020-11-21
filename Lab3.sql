@@ -67,14 +67,17 @@ END;
 -- #3
 CREATE OR REPLACE 
 PROCEDURE CUSTOMER_ACC_INFO 
-(p_custid  IN  customer.account_id%TYPE,
- p_custbl OUT customer%ROWTYPE)
+(p_accid    IN customer.account_id%TYPE,
+ p_custname OUT customer.cust_name%TYPE,
+ p_custid   OUT customer.cust_id%TYPE,
+ p_acctype  OUT customer.account_type%TYPE,
+ p_state    OUT customer.state%TYPE)
 AS 
 BEGIN
-  SELECT *
-  INTO p_custbl
+  SELECT cust_name, cust_id, account_type, state
+  INTO p_custname, p_custid, p_acctype, p_state
   FROM customer
-  WHERE account_id = p_custid;
+  WHERE account_id = p_accid;
   
   EXCEPTION
     WHEN no_data_found THEN
@@ -82,16 +85,30 @@ BEGIN
 END CUSTOMER_ACC_INFO;
 /
 DECLARE
-p_custbl customer%ROWTYPE;
+lv_custname  customer.cust_name%TYPE;
+lv_cust_id     customer.cust_id%TYPE;
+lv_acctype   customer.account_type%TYPE;
+lv_state     customer.state%TYPE;
 BEGIN
-    CUSTOMER_ACC_INFO('A-11102', p_custbl);
-     dbms_output.put_line(p_custbl.cust_id||'     '||p_custbl.cust_name||
-                         '     '||p_custbl.account_id||'   '||
-                         p_custbl.account_type||'      '||p_custbl.state);
+    CUSTOMER_ACC_INFO('A-11102', lv_custname, lv_cust_id, lv_acctype, lv_state);
+     dbms_output.put_line('A-11102'||'     '||lv_custname||'     '||lv_cust_id||
+                          '   '||lv_acctype||'      '||lv_state);
 
-    CUSTOMER_ACC_INFO('J-80808', p_custbl);
-     dbms_output.put_line(p_custbl.cust_id||'     '||p_custbl.cust_name||
-                         '     '||p_custbl.account_id||'   '||
-                         p_custbl.account_type||'      '||p_custbl.state);
+    CUSTOMER_ACC_INFO('J-80808', lv_custname, lv_cust_id, lv_acctype, lv_state);
+     dbms_output.put_line('J-80808'||'     '||lv_custname||'     '||lv_cust_id||
+                          '   '||lv_acctype||'      '||lv_state);
 END;
 /
+-- #4
+DROP TABLE pysician;
+CREATE TABLE physician (
+)
+-- populate table
+--COMMIT;
+-- anon block X2
+-- select * into from physicial where physician id =
+-- SQL%FOUND 
+-- update
+-- commit;
+--exception when no_data_found THEN insert
+--COMMIT;
