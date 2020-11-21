@@ -65,3 +65,33 @@ dbms_output.put_line('If '||p_date2||' is greater than '||p_date1||
 END;
 /
 -- #3
+CREATE OR REPLACE 
+PROCEDURE CUSTOMER_ACC_INFO 
+(p_custid  IN  customer.account_id%TYPE,
+ p_custbl OUT customer%ROWTYPE)
+AS 
+BEGIN
+  SELECT *
+  INTO p_custbl
+  FROM customer
+  WHERE account_id = p_custid;
+  
+  EXCEPTION
+    WHEN no_data_found THEN
+    dbms_output.put_line('Cust_ID not valid');
+END CUSTOMER_ACC_INFO;
+/
+DECLARE
+p_custbl customer%ROWTYPE;
+BEGIN
+    CUSTOMER_ACC_INFO('A-11102', p_custbl);
+     dbms_output.put_line(p_custbl.cust_id||'     '||p_custbl.cust_name||
+                         '     '||p_custbl.account_id||'   '||
+                         p_custbl.account_type||'      '||p_custbl.state);
+
+    CUSTOMER_ACC_INFO('J-80808', p_custbl);
+     dbms_output.put_line(p_custbl.cust_id||'     '||p_custbl.cust_name||
+                         '     '||p_custbl.account_id||'   '||
+                         p_custbl.account_type||'      '||p_custbl.state);
+END;
+/
