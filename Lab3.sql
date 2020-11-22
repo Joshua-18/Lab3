@@ -100,15 +100,61 @@ BEGIN
 END;
 /
 -- #4
-DROP TABLE pysician;
+DROP TABLE physician;
 CREATE TABLE physician (
-)
+Phys_ID             NUMBER(3),
+Phys_Name           VARCHAR2(15),
+Phys_Phone          VARCHAR2(12),
+Phys_Specialty      VARCHAR2(20));
 -- populate table
---COMMIT;
--- anon block X2
--- select * into from physicial where physician id =
--- SQL%FOUND 
+DECLARE
+BEGIN
+INSERT ALL
+    INTO physician (Phys_ID, Phys_Name, Phys_Phone, Phys_Specialty)
+    VALUES(101,'Wilcox, Chris','512-329-1848','Eyes, Ears, Throat')
+    INTO physician (Phys_ID, Phys_Name, Phys_Phone, Phys_Specialty)
+    VALUES(102,'Nusca, Jane','512-516-3947','Cardiovascular')
+    INTO physician (Phys_ID, Phys_Name, Phys_Phone, Phys_Specialty)
+    VALUES(103,'Gomez, Juan','512-382-4987','Orthopedics')
+    INTO physician (Phys_ID, Phys_Name, Phys_Phone, Phys_Specialty)
+    VALUES(104,'Li, Jan','512-516-3948','Cardiovascular')
+    INTO physician (Phys_ID, Phys_Name, Phys_Phone, Phys_Specialty)
+    VALUES(105,'Simmons, Alex','512-442-5700','Hemotology')
+SELECT * FROM dual;
+COMMIT;
+END;
+/
+-- anon block
+DECLARE
+lv_pid      physician.phys_id%TYPE;
+lv_pname    physician.phys_name%TYPE;
+lv_pphone   physician.phys_phone%TYPE;
+lv_pspec    physician.phys_specialty%TYPE;
+BEGIN
+-- select * into from physician where physician id =
+SELECT *
+INTO lv_pid, lv_pname, lv_pphone, lv_pspec
+FROM physician
+WHERE Phys_ID = lv_pid;
+-- SQL%FOUND
+IF SQL%FOUND THEN
 -- update
--- commit;
+UPDATE physician
+  SET Phys_Name = lv_pname,
+      Phys_Phone = lv_pphone,
+      Phys_Specialty = phys_specialty
+  WHERE Phys_ID = lv_pid;
 --exception when no_data_found THEN insert
+--EXCEPTION
+ELSE
+--    WHEN no_data_found THEN
+    INSERT INTO physician 
+    VALUES (lv_pid, lv_pname, lv_pphone, lv_pspec);
+END IF;
 --COMMIT;
+COMMIT;
+END;
+
+ 
+
+
