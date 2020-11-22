@@ -126,10 +126,10 @@ END;
 /
 -- anon block
 DECLARE
-lv_pid      physician.phys_id%TYPE;
-lv_pname    physician.phys_name%TYPE;
-lv_pphone   physician.phys_phone%TYPE;
-lv_pspec    physician.phys_specialty%TYPE;
+lv_pid      physician.phys_id%TYPE :='&Phys_ID';
+lv_pname    physician.phys_name%TYPE :='&Phys_Name';
+lv_pphone   physician.phys_phone%TYPE :='&Phys_Phone';
+lv_pspec    physician.phys_specialty%TYPE :='&Phys_Specialty';
 BEGIN
 -- select * into from physician where physician id =
 SELECT *
@@ -144,17 +144,16 @@ UPDATE physician
       Phys_Phone = lv_pphone,
       Phys_Specialty = phys_specialty
   WHERE Phys_ID = lv_pid;
---exception when no_data_found THEN insert
---EXCEPTION
-ELSE
---    WHEN no_data_found THEN
-    INSERT INTO physician 
-    VALUES (lv_pid, lv_pname, lv_pphone, lv_pspec);
-END IF;
+  dbms_output.put_line('Physician ID: '||lv_pid||' updated!');
 --COMMIT;
 COMMIT;
+END IF;
+--exception when no_data_found THEN insert
+EXCEPTION
+    WHEN no_data_found THEN
+    INSERT INTO physician (Phys_ID, Phys_Name, Phys_Phone, Phys_Specialty)
+    VALUES (lv_pid, lv_pname, lv_pphone, lv_pspec);
+    dbms_output.put_line('Physician ID: '||lv_pid||' added!');
+COMMIT;
 END;
-
- 
-
-
+/
