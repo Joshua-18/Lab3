@@ -130,10 +130,11 @@ lv_pid      physician.phys_id%TYPE :='&Phys_ID';
 lv_pname    physician.phys_name%TYPE :='&Phys_Name';
 lv_pphone   physician.phys_phone%TYPE :='&Phys_Phone';
 lv_pspec    physician.phys_specialty%TYPE :='&Phys_Specialty';
+record_p    physician%ROWTYPE;    
 BEGIN
 -- select * into from physician where physician id =
 SELECT *
-INTO lv_pid, lv_pname, lv_pphone, lv_pspec
+INTO record_p
 FROM physician
 WHERE Phys_ID = lv_pid;
 -- SQL%FOUND
@@ -142,12 +143,13 @@ IF SQL%FOUND THEN
 UPDATE physician
   SET Phys_Name = lv_pname,
       Phys_Phone = lv_pphone,
-      Phys_Specialty = phys_specialty
+      Phys_Specialty = lv_pspec
   WHERE Phys_ID = lv_pid;
   dbms_output.put_line('Physician ID: '||lv_pid||' updated!');
 --COMMIT;
 COMMIT;
 END IF;
+
 --exception when no_data_found THEN insert
 EXCEPTION
     WHEN no_data_found THEN
@@ -155,5 +157,94 @@ EXCEPTION
     VALUES (lv_pid, lv_pname, lv_pphone, lv_pspec);
     dbms_output.put_line('Physician ID: '||lv_pid||' added!');
 COMMIT;
+END;
+/
+DECLARE
+lv_pid      physician.phys_id%TYPE :='&Phys_ID';
+lv_pname    physician.phys_name%TYPE :='&Phys_Name';
+lv_pphone   physician.phys_phone%TYPE :='&Phys_Phone';
+lv_pspec    physician.phys_specialty%TYPE :='&Phys_Specialty';
+record_p    physician%ROWTYPE;    
+BEGIN
+-- select * into from physician where physician id =
+SELECT *
+INTO record_p
+FROM physician
+WHERE Phys_ID = lv_pid;
+-- SQL%FOUND
+IF SQL%FOUND THEN
+-- update
+UPDATE physician
+  SET Phys_Name = lv_pname,
+      Phys_Phone = lv_pphone,
+      Phys_Specialty = lv_pspec
+  WHERE Phys_ID = lv_pid;
+  dbms_output.put_line('Physician ID: '||lv_pid||' updated!');
+--COMMIT;
+COMMIT;
+END IF;
+
+--exception when no_data_found THEN insert
+EXCEPTION
+    WHEN no_data_found THEN
+    INSERT INTO physician (Phys_ID, Phys_Name, Phys_Phone, Phys_Specialty)
+    VALUES (lv_pid, lv_pname, lv_pphone, lv_pspec);
+    dbms_output.put_line('Physician ID: '||lv_pid||' added!');
+COMMIT;
+END;
+/
+SELECT *
+FROM physician;
+-- #5
+create or replace FUNCTION STRING_ADJUST
+(p_string   IN VARCHAR2,
+ p_lenght   IN NUMBER)
+RETURN VARCHAR2
+AS
+lv_string VARCHAR2(35);
+BEGIN
+lv_string := LTRIM(p_string);
+IF length(lv_string) < p_lenght THEN
+    lv_string := rpad(lv_string, p_lenght);
+ELSIF length(lv_string) > p_lenght THEN
+        lv_string := substr(lv_string, 1, p_lenght);
+END IF;
+ RETURN lv_string;
+END STRING_ADJUST;
+/
+-- test1
+DECLARE
+lv_string VARCHAR2(20) := 'What is the Time.';
+lv_lenght NUMBER(3) := 8;
+lv_return VARCHAR2(10);
+BEGIN
+lv_return := STRING_ADJUST(lv_string, lv_lenght);
+dbms_output.put_line('ORIGINAL STRING: '|| lv_string);
+dbms_output.put_line('ADJUSTED STRING: '|| lv_return);
+dbms_output.put_line('ADJUSTED STRING LENGHT: '|| length(lv_return));
+END;
+/
+-- test2
+DECLARE
+lv_string VARCHAR2(35) := 'What is the Time.';
+lv_lenght NUMBER(3) := 25;
+lv_return VARCHAR2(35);
+BEGIN
+lv_return := STRING_ADJUST(lv_string, lv_lenght);
+dbms_output.put_line('ORIGINAL STRING: '|| lv_string);
+dbms_output.put_line('ADJUSTED STRING: '|| lv_return);
+dbms_output.put_line('ADJUSTED STRING LENGHT: '|| length(lv_return));
+END;
+/
+-- test3
+DECLARE
+lv_string VARCHAR2(40) := '    What is the Time.         ';
+lv_lenght NUMBER(3) := 16;
+lv_return VARCHAR2(40);
+BEGIN
+lv_return := STRING_ADJUST(lv_string, lv_lenght);
+dbms_output.put_line('ORIGINAL STRING: '|| lv_string);
+dbms_output.put_line('ADJUSTED STRING: '|| lv_return);
+dbms_output.put_line('ADJUSTED STRING LENGHT: '|| length(lv_return));
 END;
 /
